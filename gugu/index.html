@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="초등학생을 위한 재미있는 구구단 학습 앱! 별이 쏟아지는 구구단 왕국에서 즐겁게 구구단을 외워봐요." />
+  <title>✨ 구구단 왕국 ✨</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- 배경 캔버스 -->
+<canvas id="star-canvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ═══════════════ 홈 화면 ═══════════════ -->
+<section id="home" class="screen active">
+  <div class="title-wrap">
+    <div class="title-emoji">🌟</div>
+    <h1 class="main-title">구구단 왕국</h1>
+    <p class="sub-title">✨ MULTIPLICATION KINGDOM ✨</p>
+  </div>
+
+  <div class="mode-buttons">
+    <button class="mode-btn btn-study" id="btn-goto-study">
+      <span class="btn-emoji">📖</span>
+      <span class="btn-label">외우기 모드</span>
+    </button>
+    <button class="mode-btn btn-quiz" id="btn-goto-quiz">
+      <span class="btn-emoji">🎮</span>
+      <span class="btn-label">퀴즈 모드</span>
+    </button>
+  </div>
+
+  <div class="dan-section">
+    <p class="dan-label">✏️ 어떤 단을 공부할까요?</p>
+    <div class="dan-grid" id="home-dan-grid">
+      <button class="dan-btn" data-dan="2">2단</button>
+      <button class="dan-btn" data-dan="3">3단</button>
+      <button class="dan-btn" data-dan="4">4단</button>
+      <button class="dan-btn" data-dan="5">5단</button>
+      <button class="dan-btn" data-dan="6">6단</button>
+      <button class="dan-btn" data-dan="7">7단</button>
+      <button class="dan-btn" data-dan="8">8단</button>
+      <button class="dan-btn" data-dan="9">9단</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 외우기 모드 ═══════════════ -->
+<section id="study" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" id="study-back">← 홈</button>
+    <h2 class="screen-title" id="study-title">2단 🌈</h2>
+    <div class="dan-nav">
+      <button class="nav-arrow" id="study-prev">◀</button>
+      <span class="dan-indicator" id="study-dan-indicator">2단</span>
+      <button class="nav-arrow" id="study-next">▶</button>
+    </div>
+  </div>
+
+  <div class="card-grid" id="card-grid"></div>
+</section>
+
+<!-- ═══════════════ 퀴즈 모드 ═══════════════ -->
+<section id="quiz" class="screen">
+  <div class="quiz-header">
+    <button class="back-btn" id="quiz-back">← 홈</button>
+    <div class="score-board">
+      <div class="score-item" id="score-stars">
+        <span class="score-label">⭐ 별점</span>
+        <span class="score-value" id="val-stars">0</span>
+      </div>
+      <div class="score-item" id="score-combo">
+        <span class="score-label">🔥 콤보</span>
+        <span class="score-value" id="val-combo">0</span>
+      </div>
+      <div class="score-item" id="score-progress">
+        <span class="score-label">📝 문제</span>
+        <span class="score-value" id="val-progress">1/10</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-bar" style="width: 0%"></div>
+  </div>
+
+  <div class="question-card" id="question-card">
+    <p class="question-num" id="question-num">문제 1 / 10</p>
+    <p class="question-text" id="question-text">? × ? = ?</p>
+  </div>
+
+  <div class="choices-grid" id="choices-grid">
+    <button class="choice-btn" id="choice-0">?</button>
+    <button class="choice-btn" id="choice-1">?</button>
+    <button class="choice-btn" id="choice-2">?</button>
+    <button class="choice-btn" id="choice-3">?</button>
+  </div>
+
+  <p class="feedback-msg" id="feedback-msg"></p>
+</section>
+
+<!-- ═══════════════ 결과 화면 ═══════════════ -->
+<section id="result" class="screen">
+  <div class="result-trophy" id="result-trophy">🏆</div>
+  <h2 class="result-grade" id="result-grade">구구단 황제!</h2>
+  <p class="result-msg" id="result-msg">완벽해요! 만점을 받았어요!</p>
+
+  <div class="result-stats">
+    <div class="stat-box">
+      <span class="stat-val" id="res-stars">0</span>
+      <span class="stat-lbl">⭐ 획득 별점</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-val" id="res-correct">0</span>
+      <span class="stat-lbl">✅ 정답 수</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-val" id="res-combo">0</span>
+      <span class="stat-lbl">🔥 최고 콤보</span>
+    </div>
+  </div>
+
+  <div class="result-actions">
+    <button class="action-btn btn-retry" id="btn-retry">🎮 다시 도전!</button>
+    <button class="action-btn btn-home"  id="btn-result-home">🏠 홈으로</button>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
