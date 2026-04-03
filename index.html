@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="꽁밍의 미니 게임 허브 — 구구단 왕국과 네온 테트리스를 즐겨보세요!" />
+  <title>🎮 꽁밍의 게임 허브</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #07071a;
+      --neon-mint:   #00ffe7;
+      --neon-yellow: #ffe600;
+      --neon-pink:   #ff2d78;
+      --neon-purple: #bf5fff;
+      --neon-blue:   #00b4ff;
+      --neon-orange: #ff8c00;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Jua', 'Noto Sans KR', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── 별 배경 ── */
+    canvas#bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    /* ── 그라디언트 오버레이 ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 40%, #1a003380 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 20%, #001a3380 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    /* ── 컨텐츠 래퍼 ── */
+    .wrap {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 900px;
+      padding: 60px 24px 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 56px;
+    }
+
+    /* ── 헤더 ── */
+    header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+    .header-emoji {
+      font-size: clamp(52px, 12vw, 96px);
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0) rotate(-4deg); }
+      50%      { transform: translateY(-16px) rotate(4deg); }
+    }
+
+    h1 {
+      font-size: clamp(30px, 7vw, 64px);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-yellow), var(--neon-pink), var(--neon-mint));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; background-size: 200%;
+      animation: shimmer 4s linear infinite;
+      letter-spacing: -1px;
+    }
+    @keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+
+    .subtitle {
+      font-size: clamp(13px, 2.5vw, 18px);
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 4px;
+    }
+
+    /* ── 카드 그리드 ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      width: 100%;
+    }
+
+    /* ── 게임 카드 ── */
+    .card {
+      display: flex; flex-direction: column;
+      border-radius: 24px;
+      overflow: hidden;
+      text-decoration: none;
+      position: relative;
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .card:hover { transform: translateY(-10px) scale(1.02); }
+
+    /* 카드 배경 그라디언트 */
+    .card-gugu  { background: linear-gradient(145deg, #0d0035, #1a0055, #3300aa); box-shadow: 0 8px 40px #6600ff44; }
+    .card-tetris{ background: linear-gradient(145deg, #001a30, #002a4a, #004080); box-shadow: 0 8px 40px #00aaff44; }
+
+    .card:hover.card-gugu  { box-shadow: 0 20px 60px #6600ff77, 0 0 0 2px #bf5fff55; }
+    .card:hover.card-tetris{ box-shadow: 0 20px 60px #00aaff77, 0 0 0 2px #00b4ff55; }
+
+    /* 카드 상단 비주얼 영역 */
+    .card-visual {
+      height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      font-size: 90px;
+    }
+    .card-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.15);
+    }
+    .card-icon {
+      position: relative; z-index: 1;
+      animation: iconPulse 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px currentColor);
+    }
+    @keyframes iconPulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.1); }
+    }
+
+    /* 배경 장식 원 */
+    .card-visual .deco {
+      position: absolute; border-radius: 50%;
+      opacity: 0.15; filter: blur(30px);
+    }
+    .card-gugu  .deco1 { width:160px; height:160px; background:var(--neon-purple); top:-40px; right:-30px; }
+    .card-gugu  .deco2 { width:120px; height:120px; background:var(--neon-pink);   bottom:-30px; left:20px; }
+    .card-tetris .deco1{ width:160px; height:160px; background:var(--neon-mint);   top:-40px; left:-30px; }
+    .card-tetris .deco2{ width:120px; height:120px; background:var(--neon-blue);   bottom:-30px; right:20px; }
+
+    /* 카드 바디 */
+    .card-body {
+      padding: 28px 28px 32px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .card-tag {
+      font-size: 11px; letter-spacing: 3px; font-weight: 700;
+      opacity: 0.55; text-transform: uppercase;
+    }
+    .card-gugu   .card-tag { color: var(--neon-purple); }
+    .card-tetris .card-tag { color: var(--neon-mint); }
+
+    .card-title { font-size: clamp(22px, 5vw, 30px); font-weight: 900; }
+
+    .card-desc {
+      font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.6;
+      font-family: 'Noto Sans KR', sans-serif; font-weight: 400;
+    }
+
+    /* 기능 태그 */
+    .card-features { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .feat {
+      padding: 4px 12px; border-radius: 99px; font-size: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* 플레이 버튼 */
+    .card-cta {
+      margin-top: 16px;
+      padding: 14px 0; border-radius: 14px;
+      text-align: center; font-size: 18px; font-weight: 700;
+      transition: filter 0.2s;
+      font-family: 'Jua', sans-serif;
+    }
+    .card:hover .card-cta { filter: brightness(1.15); }
+    .card-gugu   .card-cta { background: linear-gradient(135deg, #7700cc, #bf5fff); color: #fff; box-shadow: 0 4px 20px #bf5fff55; }
+    .card-tetris .card-cta { background: linear-gradient(135deg, #0077cc, #00b4ff); color: #fff; box-shadow: 0 4px 20px #00b4ff55; }
+
+    /* ── 푸터 ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding-bottom: 32px;
+      font-size: 14px; color: rgba(255,255,255,0.25);
+      letter-spacing: 1px;
+    }
+    footer a {
+      color: var(--neon-mint); text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    footer a:hover { opacity: 0.7; }
+  </style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="wrap">
+  <!-- 헤더 -->
+  <header>
+    <div class="header-emoji">🎮</div>
+    <h1>꽁밍의 게임 허브</h1>
+    <p class="subtitle">GGONGMING'S GAME HUB</p>
+  </header>
+
+  <!-- 게임 카드 -->
+  <div class="cards">
+
+    <!-- 구구단 왕국 -->
+    <a class="card card-gugu" href="./gugu/" id="card-gugu">
+      <div class="card-visual">
+        <div class="deco deco1"></div>
+        <div class="deco deco2"></div>
+        <span class="card-icon">🌟</span>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">edu game</span>
+        <h2 class="card-title">구구단 왕국</h2>
+        <p class="card-desc">초등학생을 위한 재미있는 구구단 학습 앱! 별이 쏟아지는 왕국에서 카드 뒤집기로 외우고, 퀴즈로 도전해보세요.</p>
+        <div class="card-features">
+          <span class="feat">📖 외우기 모드</span>
+          <span class="feat">🎮 퀴즈 모드</span>
+          <span class="feat">🎉 폭죽 효과</span>
+          <span class="feat">🏆 등급 시스템</span>
+        </div>
+        <div class="card-cta">✨ 지금 플레이!</div>
+      </div>
+    </a>
+
+    <!-- 네온 테트리스 -->
+    <a class="card card-tetris" href="./tetris/" id="card-tetris">
+      <div class="card-visual">
+        <div class="deco deco1"></div>
+        <div class="deco deco2"></div>
+        <span class="card-icon">🕹️</span>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">arcade game</span>
+        <h2 class="card-title">네온 테트리스</h2>
+        <p class="card-desc">화려한 네온 블록과 우주 배경의 클래식 테트리스! 고스트 블록, 홀드, 레벨 업 시스템으로 더욱 짜릿하게.</p>
+        <div class="card-features">
+          <span class="feat">👻 고스트 블록</span>
+          <span class="feat">🔒 홀드</span>
+          <span class="feat">⬆️ 레벨 업</span>
+          <span class="feat">📱 터치 지원</span>
+        </div>
+        <div class="card-cta">🚀 지금 플레이!</div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- 푸터 -->
+<footer>
+  <p>Made with ❤️ by <a href="https://github.com/ggongming93" target="_blank">@ggongming93</a></p>
+</footer>
+
+<script>
+/* ── 별 파티클 배경 ── */
+(function() {
+  const canvas = document.getElementById('bg');
+  const ctx    = canvas.getContext('2d');
+  let W, H;
+
+  const stars = Array.from({length:200}, () => ({
+    x: Math.random() * 2000,
+    y: Math.random() * 2000,
+    r: Math.random() * 1.5 + 0.2,
+    a: Math.random(),
+    da: (Math.random() - 0.5) * 0.01,
+  }));
+
+  const shooters = [];
+  setInterval(() => {
+    shooters.push({
+      x: Math.random() * (W||800),
+      y: Math.random() * ((H||600) * 0.4),
+      vx: 5 + Math.random() * 7,
+      vy: 2 + Math.random() * 4,
+      len: 80 + Math.random() * 120,
+      alpha: 1, done: false
+    });
+  }, 2500);
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+
+    stars.forEach(s => {
+      s.a += s.da;
+      if (s.a <= 0 || s.a >= 1) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${s.a.toFixed(2)})`;
+      ctx.fill();
+    });
+
+    shooters.filter(s => !s.done).forEach(s => {
+      const g = ctx.createLinearGradient(s.x, s.y, s.x - s.len, s.y - s.len*0.5);
+      g.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.beginPath();
+      ctx.strokeStyle = g; ctx.lineWidth = 1.5;
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x - s.len, s.y - s.len * 0.5);
+      ctx.stroke();
+      s.x += s.vx; s.y += s.vy; s.alpha -= 0.022;
+      if (s.alpha <= 0) s.done = true;
+    });
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+</body>
+</html>
