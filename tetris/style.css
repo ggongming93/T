@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Share+Tech+Mono&display=swap');
+
+/* ─── Variables ─── */
+:root {
+  --bg:          #080818;
+  --panel-bg:    rgba(255,255,255,0.04);
+  --border:      rgba(255,255,255,0.12);
+  --neon-mint:   #00ffe7;
+  --neon-yellow: #ffe600;
+  --neon-purple: #bf5fff;
+  --neon-green:  #00ff88;
+  --neon-pink:   #ff2d78;
+  --neon-blue:   #00b4ff;
+  --neon-orange: #ff8c00;
+  --white:       #ffffff;
+  --radius:      16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Jua', sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ─── Star canvas ─── */
+#star-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+
+/* ─── Screen system ─── */
+.screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 10;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+   START SCREEN
+══════════════════════════════ */
+#start-screen { gap: 32px; text-align: center; padding: 20px; }
+
+.game-logo { font-size: clamp(56px,12vw,100px); animation: logoBounce 2s ease-in-out infinite; }
+@keyframes logoBounce {
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-12px) rotate(3deg); }
+}
+
+.game-title {
+  font-size: clamp(36px,8vw,72px);
+  background: linear-gradient(135deg, var(--neon-mint), var(--neon-purple), var(--neon-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  background-size: 200%; animation: shimmer 3s linear infinite;
+  letter-spacing: 2px;
+}
+@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+
+.game-subtitle { font-size: 16px; color: rgba(255,255,255,0.4); letter-spacing: 4px; margin-top: -12px; }
+
+/* 최고점수 */
+.best-score-wrap {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--panel-bg); border: 1px solid var(--border);
+  border-radius: 99px; padding: 10px 28px;
+}
+.best-label { font-size: 15px; color: rgba(255,255,255,0.45); }
+.best-value { font-size: 28px; color: var(--neon-yellow); text-shadow: 0 0 12px var(--neon-yellow); }
+
+/* 조작법 */
+.controls-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 24px;
+  background: var(--panel-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 28px;
+  font-size: 15px;
+}
+.ctrl-row { display: flex; align-items: center; gap: 10px; }
+.key {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px; padding: 3px 10px; font-family: 'Share Tech Mono', monospace;
+  font-size: 13px; white-space: nowrap;
+}
+.ctrl-desc { color: rgba(255,255,255,0.6); }
+
+/* 시작 버튼 */
+.start-btn {
+  cursor: pointer; border: none; border-radius: var(--radius);
+  padding: 18px 56px; font-family: 'Jua', sans-serif;
+  font-size: 28px; font-weight: 700; color: #000;
+  background: linear-gradient(135deg, var(--neon-mint), var(--neon-blue));
+  box-shadow: 0 0 30px var(--neon-mint), 0 4px 20px rgba(0,255,231,0.4);
+  transition: transform 0.15s, box-shadow 0.2s;
+  animation: pulseBtn 2s ease-in-out infinite;
+}
+@keyframes pulseBtn {
+  0%,100% { box-shadow: 0 0 30px var(--neon-mint), 0 4px 20px rgba(0,255,231,0.4); }
+  50%      { box-shadow: 0 0 50px var(--neon-mint), 0 4px 40px rgba(0,255,231,0.6); }
+}
+.start-btn:hover { transform: scale(1.06) translateY(-2px); }
+.start-btn:active { transform: scale(0.97); }
+
+/* ══════════════════════════════
+   GAME SCREEN
+══════════════════════════════ */
+#game-screen {
+  flex-direction: row; gap: 16px;
+  padding: 16px; align-items: flex-start; justify-content: center;
+}
+
+/* 사이드 패널 */
+.side-panel {
+  display: flex; flex-direction: column; gap: 14px;
+  width: 140px; flex-shrink: 0;
+}
+
+.panel-box {
+  background: var(--panel-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.panel-label {
+  font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+.panel-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 26px; text-align: center; min-width: 80px;
+}
+#score-val   { color: var(--neon-yellow); text-shadow: 0 0 10px var(--neon-yellow); }
+#level-val   { color: var(--neon-mint);   text-shadow: 0 0 10px var(--neon-mint); }
+#lines-val   { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple); }
+
+/* next / hold 캔버스 */
+.mini-canvas { border-radius: 8px; }
+
+/* 게임 보드 */
+.board-wrap {
+  position: relative; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 8px; overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,180,255,0.15), inset 0 0 30px rgba(0,0,0,0.5);
+}
+
+#game-canvas { display: block; }
+
+/* 일시정지 오버레이 */
+#pause-overlay {
+  display: none; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  font-size: 48px; letter-spacing: 4px;
+  color: var(--neon-mint); text-shadow: 0 0 20px var(--neon-mint);
+  flex-direction: column; gap: 12px;
+}
+#pause-overlay.visible { display: flex; }
+.pause-hint { font-size: 16px; color: rgba(255,255,255,0.4); letter-spacing: 2px; }
+
+/* ── 모바일 D-Pad ── */
+#dpad {
+  display: none;
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 20; gap: 8px; flex-direction: column; align-items: center;
+}
+.dpad-row { display: flex; gap: 8px; }
+.dpad-btn {
+  cursor: pointer; border: 2px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08); border-radius: 12px;
+  width: 60px; height: 60px; color: #fff;
+  font-size: 22px; display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.dpad-btn:active { background: rgba(255,255,255,0.22); transform: scale(0.92); }
+.dpad-btn.wide { width: 132px; font-size: 16px; font-family: 'Jua', sans-serif; }
+
+@media (pointer: coarse) {
+  #dpad { display: flex; }
+  #game-screen { padding-bottom: 220px; }
+}
+
+/* ══════════════════════════════
+   GAMEOVER SCREEN
+══════════════════════════════ */
+#over-screen { gap: 28px; text-align: center; padding: 20px; }
+
+.over-icon { font-size: clamp(64px,14vw,110px); animation: overShake 0.6s ease; }
+@keyframes overShake {
+  0%,100%{ transform:translate(0,0) rotate(0deg); }
+  20%    { transform:translate(-6px,0) rotate(-4deg); }
+  40%    { transform:translate(6px,0) rotate(4deg); }
+  60%    { transform:translate(-4px,0) rotate(-2deg); }
+  80%    { transform:translate(4px,0) rotate(2deg); }
+}
+
+.over-title {
+  font-size: clamp(32px,7vw,58px);
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-yellow));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.new-record {
+  display: none; font-size: 18px; color: var(--neon-yellow);
+  text-shadow: 0 0 12px var(--neon-yellow); letter-spacing: 3px;
+  animation: blink 1s ease-in-out infinite alternate;
+}
+.new-record.show { display: block; }
+@keyframes blink { from{opacity:1} to{opacity:0.3} }
+
+.over-stats {
+  display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+}
+.over-stat {
+  background: var(--panel-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.over-stat-val { font-size: 36px; font-family: 'Share Tech Mono', monospace; color: var(--neon-yellow); text-shadow: 0 0 10px var(--neon-yellow); }
+.over-stat-lbl { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
+
+.over-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+.over-btn {
+  cursor: pointer; border: none; border-radius: var(--radius);
+  padding: 15px 36px; font-family: 'Jua', sans-serif; font-size: 22px;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.over-btn:hover { transform: translateY(-3px) scale(1.04); }
+.over-btn:active { transform: scale(0.97); }
+.btn-restart {
+  background: linear-gradient(135deg, var(--neon-pink), #cc0044);
+  color: #fff; box-shadow: 0 4px 20px rgba(255,45,120,0.4);
+}
+.btn-menu {
+  background: var(--panel-bg); color: #fff;
+  border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* ─── Confetti ─── */
+#confetti-canvas {
+  position: fixed; inset: 0; z-index: 100; pointer-events: none;
+}
+
+/* ─── Flash overlay ─── */
+#flash-overlay {
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: 0; transition: opacity 0.1s;
+}
+#flash-overlay.flash { animation: flashAnim 0.4s ease; }
+@keyframes flashAnim {
+  0%   { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+/* ─── Level-up popup ─── */
+#levelup-popup {
+  position: fixed; top: 40%; left: 50%; transform: translate(-50%,-50%);
+  z-index: 95; pointer-events: none;
+  font-size: 48px; font-family: 'Jua', sans-serif;
+  color: var(--neon-yellow); text-shadow: 0 0 30px var(--neon-yellow);
+  opacity: 0;
+}
+#levelup-popup.show { animation: levelupPop 1.2s ease forwards; }
+@keyframes levelupPop {
+  0%   { opacity:0; transform:translate(-50%,-50%) scale(0.5); }
+  20%  { opacity:1; transform:translate(-50%,-50%) scale(1.2); }
+  70%  { opacity:1; transform:translate(-50%,-60%) scale(1); }
+  100% { opacity:0; transform:translate(-50%,-80%) scale(0.8); }
+}

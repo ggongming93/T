@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="네온 우주 테트리스 - 화려한 네온 블록과 우주 배경의 테트리스 게임!" />
+  <title>🕹️ 네온 테트리스</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<canvas id="star-canvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
+<div id="flash-overlay"></div>
+<div id="levelup-popup">⬆️ LEVEL UP!</div>
+
+<!-- ══════════ 시작 화면 ══════════ -->
+<section id="start-screen" class="screen active">
+  <div class="game-logo">🕹️</div>
+  <h1 class="game-title">네온 테트리스</h1>
+  <p class="game-subtitle">NEON TETRIS</p>
+
+  <div class="best-score-wrap">
+    <span class="best-label">🏆 최고 점수</span>
+    <span class="best-value" id="start-best">0</span>
+  </div>
+
+  <div class="controls-grid">
+    <div class="ctrl-row"><span class="key">← →</span><span class="ctrl-desc">좌우 이동</span></div>
+    <div class="ctrl-row"><span class="key">↓</span><span class="ctrl-desc">소프트 드롭</span></div>
+    <div class="ctrl-row"><span class="key">↑ / Z</span><span class="ctrl-desc">시계방향 회전</span></div>
+    <div class="ctrl-row"><span class="key">X</span><span class="ctrl-desc">반시계 회전</span></div>
+    <div class="ctrl-row"><span class="key">Space</span><span class="ctrl-desc">하드 드롭</span></div>
+    <div class="ctrl-row"><span class="key">C</span><span class="ctrl-desc">홀드</span></div>
+    <div class="ctrl-row"><span class="key">P / Esc</span><span class="ctrl-desc">일시정지</span></div>
+    <div class="ctrl-row"><span class="key">터치</span><span class="ctrl-desc">스와이프/탭</span></div>
+  </div>
+
+  <button class="start-btn" id="btn-start">🚀 게임 시작!</button>
+</section>
+
+<!-- ══════════ 게임 화면 ══════════ -->
+<section id="game-screen" class="screen">
+
+  <!-- 왼쪽 패널: HOLD + SCORE -->
+  <div class="side-panel" id="left-panel">
+    <div class="panel-box">
+      <span class="panel-label">HOLD</span>
+      <canvas id="hold-canvas" class="mini-canvas" width="120" height="80"></canvas>
+    </div>
+    <div class="panel-box">
+      <span class="panel-label">SCORE</span>
+      <span class="panel-value" id="score-val">0</span>
+    </div>
+    <div class="panel-box">
+      <span class="panel-label">LEVEL</span>
+      <span class="panel-value" id="level-val">1</span>
+    </div>
+    <div class="panel-box">
+      <span class="panel-label">LINES</span>
+      <span class="panel-value" id="lines-val">0</span>
+    </div>
+  </div>
+
+  <!-- 게임 보드 -->
+  <div class="board-wrap">
+    <canvas id="game-canvas"></canvas>
+    <div id="pause-overlay">
+      <span>⏸ PAUSE</span>
+      <span class="pause-hint">P 또는 ESC 로 재개</span>
+    </div>
+  </div>
+
+  <!-- 오른쪽 패널: NEXT -->
+  <div class="side-panel" id="right-panel">
+    <div class="panel-box">
+      <span class="panel-label">NEXT</span>
+      <canvas id="next-canvas" class="mini-canvas" width="120" height="280"></canvas>
+    </div>
+    <div class="panel-box">
+      <span class="panel-label">BEST</span>
+      <span class="panel-value" id="best-val">0</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════ 모바일 D-Pad ══════════ -->
+<div id="dpad">
+  <div class="dpad-row">
+    <button class="dpad-btn" id="dpad-hold" title="홀드">🔒</button>
+    <button class="dpad-btn" id="dpad-rcw"  title="시계방향 회전">↻</button>
+    <button class="dpad-btn" id="dpad-rccw" title="반시계 회전">↺</button>
+  </div>
+  <div class="dpad-row">
+    <button class="dpad-btn" id="dpad-left">◀</button>
+    <button class="dpad-btn" id="dpad-down">▼</button>
+    <button class="dpad-btn" id="dpad-right">▶</button>
+  </div>
+  <div class="dpad-row">
+    <button class="dpad-btn wide" id="dpad-drop">⬇ 하드드롭</button>
+  </div>
+</div>
+
+<!-- ══════════ 게임 오버 화면 ══════════ -->
+<section id="over-screen" class="screen">
+  <div class="over-icon">💀</div>
+  <h2 class="over-title">게임 오버!</h2>
+  <p class="new-record" id="new-record">🌟 신기록 달성! 🌟</p>
+
+  <div class="over-stats">
+    <div class="over-stat">
+      <span class="over-stat-val" id="over-score">0</span>
+      <span class="over-stat-lbl">최종 점수</span>
+    </div>
+    <div class="over-stat">
+      <span class="over-stat-val" id="over-best">0</span>
+      <span class="over-stat-lbl">🏆 최고 점수</span>
+    </div>
+    <div class="over-stat">
+      <span class="over-stat-val" id="over-lines">0</span>
+      <span class="over-stat-lbl">클리어 라인</span>
+    </div>
+    <div class="over-stat">
+      <span class="over-stat-val" id="over-level">1</span>
+      <span class="over-stat-lbl">도달 레벨</span>
+    </div>
+  </div>
+
+  <div class="over-actions">
+    <button class="over-btn btn-restart" id="btn-restart">🎮 다시 도전!</button>
+    <button class="over-btn btn-menu"    id="btn-menu">🏠 메뉴로</button>
+  </div>
+</section>
+
+<script src="tetris.js"></script>
+</body>
+</html>
